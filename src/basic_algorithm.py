@@ -179,6 +179,20 @@ def max_tree_depth(root: TreeNode) -> int:
                    max_tree_depth(root.right))
 
 
+def min_tree_depth(root: TreeNode) -> int:
+    """ Given an tree and find min depth
+    :return:
+    """
+    if not root:
+        return 0
+    if not root.left:
+        return 1 + min_tree_depth(root.right)
+    if not root.right:
+        return 1 + min_tree_depth(root.left)
+    return 1 + min(min_tree_depth(root.left),
+                   min_tree_depth(root.right))
+
+
 if __name__ == '__main__':
     # a = [2, 3, 5, 6, 7, 8, 10]
     # idx = binary_search(arr=a, elem=8)
