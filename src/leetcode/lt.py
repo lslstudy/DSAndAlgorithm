@@ -61,6 +61,19 @@ def two_link_sum(link1: ListNode, link2: ListNode) -> ListNode:
     return phead.next
 
 
+def swap_pairs(head: ListNode) -> ListNode:
+    """ (1 -> 2 -> 3 -> 4 -> 5) => (2 -> 1 -> 4 -> 3 -> 5)
+    """
+    if not head or not head.next:
+        return head
+    first, second = head, head.next
+    third = second.next
+    head = second
+    second.next = first
+    first.next = swap_pairs(third)
+    return head
+
+
 def longest_sub_length(s: str) -> int:
     """ longest sub str without repeat character
     :return:
@@ -69,12 +82,28 @@ def longest_sub_length(s: str) -> int:
         return 0
     char_dict, res, st = dict(), 0, 0
     for idx, char in enumerate(s):
+        # 不存在(不重复)时计算长度或者出现重复的字符时计算
         if char not in char_dict or char_dict[char] < st:
             res = max(res, idx - st + 1)
         else:
             st = char_dict[char] + 1
         char_dict[char] = idx
     return res
+
+
+def longest_sub_str(str1: str, str2: str) -> int:
+    """ if str1[i] == str2[j] dp[i][j] = dp[i-1][j-1] + 1
+        else: dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+    """
+    m, n = len(str1), len(str2)
+    dp = [[0] * (m+1) for _ in range(n+1)]
+    for i in range(n):
+        for j in range(m):
+            if str1[j] == str2[i]:
+                dp[i+1][j+1] = dp[i][j] + 1
+            else:
+                dp[i+1][j+1] = max(dp[i+1][j], dp[i][j+1])
+    return dp[-1][-1]
 
 
 def remove_nth_from_end(head: ListNode, n: int):
@@ -125,6 +154,7 @@ def generate_parenthesis(n: int) -> list:
     def helper(left, right, result):
         if left == n and right == n:
             answer.append(result)
+            return
         if left < n:
             helper(left+1, right, result+"(")
         if left > right and right < n:
@@ -414,11 +444,21 @@ def unique_path_2(board: list) -> int:
 
 def min_path_sum(grid: list) -> int:
     """ Given a grid and find min path sum from [0,0] to [m, n]
-        dp[i, j] = min(dp[i, j-1], dp[i-1, j]) + grid[i-1, j-1]
+        dp[i, j] = min(dp[i, j-1], dp[i-1, j]) + grid[i, j]
     :param grid:
     :return:
     """
-    pass
+    if not grid:
+        return 0
+    dp = [[0] * len(grid[0]) for _ in range(len(grid))]
+    for i in range(1, len(grid[0])):
+        dp[0][i] = dp[0][i-1] + grid[0][i]
+    for j in range(1, len(grid)):
+        dp[j][0] = dp[j-1][0] + grid[j][0]
+    for i in range(1, len(grid)):
+        for j in range(1, len(grid[0])):
+            dp[i][j] = min(dp[i-1][j], dp[i][j-1]) + grid[i][j]
+    return dp[-1][-1]
 
 
 def min_triangle(t: list) -> int:
@@ -557,9 +597,9 @@ def edit_distance(word1: str, word2: str) -> int:
     """
     m, n = len(word1), len(word2)
     dp = [[0] * (m+1) for _ in range(n+1)]
-    for i in range(1, m+1):
+    for i in range(1, n+1):
         dp[i][0] = i
-    for j in range(1, n+1):
+    for j in range(1, m+1):
         dp[0][j] = j
     print(dp)
     for i in range(1, m+1):
@@ -637,6 +677,9 @@ if __name__ == '__main__':
 
     t = [[2], [3, 4], [6, 5, 7], [4, 1, 8, 3]]
     ans = min_triangle(t=t)
+    print(ans)
+
+    ans = longest_sub_str(str1="abcda", str2="abdefa")
     print(ans)
 
 
