@@ -206,7 +206,7 @@ def find_largest_kth(root: TreeNode, k: int) -> int:
 
     # in_order
     seq = in_order(root)
-    return seq[-k]
+    return seq[-k] if len(seq) >= k else -1
 
 
 def array_to_tree(arr: list):
@@ -312,11 +312,28 @@ def max_slide_window_value(arr: list, n: int) -> list:
     return answer
 
 
-def queue(stack1: list, stack2: list) -> list:
-    """ given two stacks and generate queue
-    :return:
+class Queue:
+    """ user define queue implements with two stacks
     """
-    pass
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.stack1 = []
+        self.stack2 = []
+
+    def put(self, elem, *args):
+        self.stack1.append(elem)
+        for arg in args:
+            self.stack1.append(arg)
+
+    def get(self):
+        if self.stack2:
+            return self.stack2.pop()
+        while self.stack1:
+            elem = self.stack1.pop()
+            self.stack2.append(elem)
+        if len(self.stack2) == 0:
+            return -1
+        return self.stack2.pop()
 
 
 def hamming_weight(n: int) -> int:
@@ -379,6 +396,21 @@ def q_sort(arr: list) -> list:
         else:
             right.append(item)
     return q_sort(left) + [last] + q_sort(right)
+
+
+def binary_search(arr: list, target: int) -> int:
+    """ Given a sorted array and find target elem index if exists
+    """
+    left, right = 0, len(arr) - 1
+    mid = (left + right) >> 1
+    while left < right:
+        if arr[mid] == target:
+            return mid
+        if arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
 
 
 def climb_stairs(high: int) -> int:
@@ -681,6 +713,10 @@ if __name__ == '__main__':
 
     ans = longest_sub_str(str1="abcda", str2="abdefa")
     print(ans)
+
+    queue = Queue(capacity=10)
+    queue.put(1, 2, 3, 4, 5)
+    print(queue.get(), queue.get(), queue.get(), queue.get(), queue.get(), queue.get())
 
 
 
