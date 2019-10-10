@@ -22,7 +22,7 @@ class ListNode:
 
 
 class TreeNode:
-    def __init__(self, val):
+    def __init__(self, val=None):
         self.val = val
         self.left = None
         self.right = None
@@ -658,6 +658,18 @@ def longest_common_sub(word1: str, word2: str) -> int:
             else:
                 dp[i][j] = max(dp[i-1][j], dp[i][j-1])
     return dp[m][n]
+
+
+def min_consist_of_coin(target: int) -> int:
+    """ find min count of coins which sum coins value equal target
+        dp[i] = min(dp[i-1], dp[target-3], dp[target-5]) + 1
+    """
+    coins = [1, 3, 5]
+    if not target:
+        return -1
+    dp = [0] * (target+1)
+    for i in range(1, target + 1):
+        pass
 
 
 if __name__ == '__main__':
