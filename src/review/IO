@@ -1,0 +1,35 @@
+文件描述符fd：指向文件引用的抽象概念,非负整数，是一个索引，只想内核为每一个进程所维护的该进程打开的文件的记录表
+
+缓存IO：操作系统会先将数据缓存在文件系统的页缓存(page cache)中，数据会先被拷贝到操作系统内核的缓冲区，
+然后才会从操作系统的内核缓冲区拷贝到应用程序的地址空间。
+
+IO模式
+    1.阻塞IO:内核准备数据和从内核缓冲区拷贝到用户进程两个过程都是阻塞的（recvfrom系统调用）
+    2.非阻塞IO：将socket设置为NONBLOCK,内核缓冲区没有准备好数据返回error,需要用户进程不断进行询问内核是否准备好数据，
+        准备数据阶段不阻塞，但从内核缓冲区拷贝到用户进程是阻塞的
+    3.IO多路复用：会把socket注册到select，当任何一个socket中的数据准备完毕，select就会返回，用户进程将数据从kernel
+        拷贝到用户进程，特点是一个进程同时等待多个文件描述符。(select，recvfrom)，准备数据不阻塞，拷贝数据阻塞，还是阻塞的
+    4.信号驱动IO
+    5.异步IO：用户进程发起read后，内核立即返回，然后kernel准备数据，拷贝数据到用户内存都完成后，发送signal给
+        用户进程，整个IO操作完成。
+
+
+IO多路复用之select、poll、epoll
+    int select(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
+    select 函数监视的文件描述符分3类，分别是writefds、readfds、和exceptfds。调用后select函数会阻塞，
+    直到有描述符就绪（有数据 可读、可写、或者有except），或者超时（timeout指定等待时间，如果立即返回设为null即可），
+    函数返回。当select函数返回后，可以 通过遍历fdset，来找到就绪的描述符。默认文件描述符数量为1024，可通过宏定义修改。
+
+    int poll(struct pollfd *fds, unsigned int nfds, int timeout);
+    struct pollfd {
+        int fd;         /*文件描述符*/
+        short events;   /*监听的events*/
+        short revents;  /*发生的event*/
+    }
+    poll返回后，遍历pollfd来获取就绪的描述符.
+
+
+    epoll:使用一个文件描述符管理多个描述符
+    int epoll_create(int size);   //创建epoll句柄，占用一个fd值,用完后需关闭
+    int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+    int eopll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
