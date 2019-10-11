@@ -1,0 +1,37 @@
+tornado 内部状态吗：
+    404:    请求路径无法匹配任何requesthandler类对应的模式返回404
+    400:    没有传递需要给的的参数返回400
+    405:    没有定义的方法,请求的方法不对
+    500:    遇到任何不能让其退出的错误或者代码里面没有捕捉的异常返回500
+    200:    成功响应请求的标志.
+
+重写错误信息：重写RequestHandler中的write_error方法
+    def write_error(self. status_code, **kwargs):
+        pass
+
+tornado 异步
+
+tornado.httpclient.HTTPClient
+
+@tornado.web.asynchronous
+tornado.httpclient.AsyncHTTPClient() -> fetch(callback=self.method_name)
+
+异步装饰器和finish方法
+@tornado.web.asynchronous 作用：tornado默认在函数返回时关闭客户端的连接，
+    但是在处理回调函数的异步请求时，需要保持开启状态直到回调函数执行完毕，作用就是保持客户端的连接状态
+
+finish方法作用: 在使用@tornado.web.asynchornous装饰器时，tornado不会关闭客户端的连接，必须显示调用
+    finish方法告诉tornado关闭连接.
+
+异步生成器(tornado.gen模块):
+     example:
+
+     @tornado.web.asynchronous
+     @tornado.gen.engine
+     def get(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        response = yield tornado.gen.Task(client.fetch, urls+params)
+        ...
+        self.write("xxx")
+        self.finish()
+
