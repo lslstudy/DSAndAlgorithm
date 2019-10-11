@@ -60,6 +60,23 @@ select type, sum(sale_price) from sale_price group by type ;
       left outer join:  左边表作为主表,右边表字段没有的为null
       right outer join: 右边表为主表,左边没有的字段为null
 
+
+## 性能优化要点:
+    1.<>(!=)操作无法使用索引,可以使用union all查询代替
+      select id from orders where amount != 100;
+      (select id from orders where amount > 100)
+      union all
+      (select id from orders where amount < 100 and amount > 0)
+
+    2.innodb引擎下or无法使用组合索引
+      select id, product_name from orders where mobile_no="xxxx" or user_id="xxx" ;
+      (select id, product_name from orders where mobile_no="xxxx")
+      union
+      (select id, product_name from orders where id="xxx")
+
+    3.in适合主表大子表小,exist适合主表小子表大
+
+
 # 查询物品售价高于该种物品均价的产品
 select name, type sale_price from cargo as a1
 where a1.sale_price >
@@ -68,7 +85,7 @@ where a1.sale_price >
 # 1.窗口函数 over (partition by column1 order by column2);
 
 # 同种商品按照价格升序排序
-select name, type, sale_price, rank() over (partition by type order by sale_price) as ranking frin cargo ;
+select name, type, sale_price, rank() over (partition by type order by sale_price) as ranking from cargo ;
 
 # rank(稀疏的有间隔), dense_rank(密度排序无间隔) row_number()
 
