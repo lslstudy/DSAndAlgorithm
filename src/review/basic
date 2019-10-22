@@ -1,0 +1,108 @@
+python 解释器
+    pyc文件是将py文件的解释结果保存下来的文件
+    note:
+        1.对于当前调用的主程序不会生成pyc文件；
+        2.以import xxx或from xxx import xxx等方式导入主程序的模块才会生成pyc文件；
+        3.每次使用pyc文件时，都会根据pyc文件的创建时间和源模块进行对比，如果源模块有修改，则重新创建pyc文件，并覆盖先前的pyc文件，如果没有修改，直接使用pyc文件代替模块；
+        4.pyc文件统一保存在模块所在目录的__pycache__文件夹内。
+
+
+bytes.decode("解码类型")    将bytes对象解码成字符串，默认使用utf-8进行解码
+str.encode("编码类型")      利用字符串的encode方法编码成bytes，默认为utf-8类型
+
+变量的作用域查找：
+    局部查找 -> 局部外的闭包查找 -> 全局查找
+
+函数具有调用时才查找变量的特性。在你没调用它之前，它不会保存也不关心它内部变量的具体值。只有等到你调用它的时候，它才逐一去找这些变量的具体值。
+
+
+使用yield返回的函数会变成一个生成器（generator）。 在调用生成器的过程中，每次遇到yield时函数会暂停并保存当前所有的运行信息，
+返回yield的值。并在下一次执行next()方法时从当前位置继续运行。
+
+
+
+def outer(func):
+    def inner():
+        print("我是内层函数！")
+    return inner
+
+def foo():
+    print("我是原始函数！")
+
+outer(foo)
+outer(foo())
+
+函数名加括号：对函数进行调用，比如foo()、outer(foo)
+
+函数名作为参数： outer(foo)中的foo本身是个函数，但作为参数被传递给了outer函数
+
+函数名加括号被当做参数：其实就是先调用函数，再将它的返回值当做别的函数的参数，例如outer(foo())
+
+返回函数名：return inner
+
+返回函数名加括号：return inner()，其实就是先执行inner函数，再将其返回值作为别的函数的返回值
+
+装饰器的语法规则。规则是：
+    被装饰的函数的名字会被当作参数传递给装饰函数。装饰函数执行它自己内部的代码后，会将它的返回值赋值给被装饰的函数。
+
+def outer(func):
+    def inner(*args,**kwargs):
+        print("认证成功！")
+        result = func(*args,**kwargs)
+        print("日志添加成功")
+        return result
+    return inner
+
+@outer
+def f1(name,age):
+    print("%s 正在连接业务部门1数据接口......"%name)
+
+1.从上到下执行，outer函数不会执行，但是会加载到内存中
+2.遇到装饰器@outer会执行
+
+
+一些内置函数:
+ascii(): 调用对象的__repr__()方法
+any():接收一个可迭代对象，如果迭代对象里有一个元素的bool运算值是True，那么返回True，否则False。
+all():接收一个可迭代对象，如果对象里的所有元素的bool运算值都是True，那么返回True，否则False。
+bin()、oct()、hex():三个函数是将十进制数分别转换为2/8/16进制。
+bytes():将对象转换成字节类型
+str():将对象转换成字符串类型，同样也可以指定编码方式。例如：str(bytes对象，encoding='utf-8')
+callable():判断对象是否可以被调用。如果某个对象具有__call__方法，那它就能被调用。
+chr():返回某个十进制数对应的ASCII字符，例如：chr(99) = ‘c’。
+ord():与chr()相反，返回某个ASCII字符对应的十进制数，例如，ord('A') = 65
+dir():显示对象所有的属性和方法。最棒的辅助函数之一！
+divmod():除法，同时返回商和余数的元组。
+enumerate():枚举函数，在迭代对象的时候，额外提供一个序列号的输出。
+eval():将字符串直接解读并执行。例如：s = "6*8"，s是一个字符串，d = eval(s)， d的结果是48。
+format():执行format()，其实就是调用该对象所属类的__format__方法。类似print功能。
+frozenset():返回一个不能增加和修改的集合类型对象。
+globals():列出当前环境下所有的全局变量。注意要与global关键字区分！
+locals():返回当前可用的局部变量。
+hash():为不可变对象，例如字符串生成哈希值的函数！
+help():返回对象的帮助文档。谁用谁知道！
+id():返回对象的内存地址,常用来查看变量引用的变化，对象是否相同等。常用功能之一！
+input():接收用户输入，返回一个输入的字符串
+isinstance():判断一个对象是否是某个类的实例。比type()方法适用面更广
+issubclass():issubclass(a，b),判断a是否是b的子类。
+iter():制造一个迭代器，使其具备next()能力。
+len():返回对象的长度。不能再常用的函数之一了。
+max()/min():返回给定集合里的最大或者最小的元素。可以指定排序的方法！
+memoryview(obj):返回obj的内存视图对象。obj只能是bytes或bytesarray类型。
+next():通过调用迭代器的__next__()方法，获取下一个元素。
+object():该方法不接收任何参数，返回一个没有任何功能的对象。object是Python所有类的基类。
+open():打开文件的方法。
+pow():幂函数。
+range():没错，这是Python内置的函数
+repr():调用对象所属类的__repr__方法，与print功能类似
+reversed():反转，逆序对象
+round():四舍五入．
+slice():返回一个切片类型的对象。
+super():调用父类。面向对象中类的机制相关
+type():显示对象所属的数据类型。常用方法！
+vars():与dir()方法类似，不过dir()方法返回的是key，vars()方法返回key的同时还把value一起打印了。
+map():使用格式：obj = map(func, iterable),func是某个函数名，iterable是一个可迭代对象。
+filter():过滤器，用法和map类似。在函数中设定过滤的条件，逐一循环对象中的元素，将返回值为True时的元素留下
+zip():组合对象。将对象逐一配对。对象的长度不一致,多余的会被抛弃！以最短的为基础！
+sorted():排序方法。有key和reverse两个重要参数。
+
