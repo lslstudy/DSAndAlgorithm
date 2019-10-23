@@ -97,8 +97,16 @@ class LRUCache(object):
 
 
 if __name__ == '__main__':
-    a = LinkedList()
-    a.append_to_front(node=Node(10))
-    a.append_to_front(node=Node(11))
-    a.append_to_front(node=Node(12))
+    # a = LinkedList()
+    # a.append_to_front(node=Node(10))
+    # a.append_to_front(node=Node(11))
+    # a.append_to_front(node=Node(12))
+
+    # import sys
+    # print(sys.maxsize)
+    # print(sys.version)
+    # print(sys.platform)
+    # import bisect
+
+    import time
 
