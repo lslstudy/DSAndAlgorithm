@@ -206,3 +206,46 @@ try..except...finally:
 
 常用模块：
     os
+
+
+partial: 和装饰器一样，它可以扩展函数的功能，但又不完成等价于装饰器,对函数参数实现赋值
+
+from functools import partial
+
+def my_partial(a, b, c, d):
+    print(a, b, c, d)
+
+test1 = partial(my_partial, 1, 2)
+test1(3, 4)
+
+test2 = partial(my_partial, c=3, d=4)
+test2(1, 2)
+
+test3 = partial(my_partial, b=2, d=4)
+test3(1, c=3)
+
+默认的函数参数值应该是不可变对象，None,False, True,数字或者字符串等,不要是[], {}等
+
+lambda 中的参数是自由变量运行时绑定的，以最后一次绑定为准。
+
+
+单方法的类转换为函数使用闭包技术: 闭包关键特点就是它会记住自己被定义时的环境
+
+from urllib.request import urlopen
+
+class UrlTemplate:
+    def __init__(self, template):
+        self.template = template
+
+    def open(self, **kwargs):
+        return urlopen(self.template.format(kwargs))
+
+def urltemplate(template):
+    def opener(**kwargs):
+        return urlopen(template.format(kwargs))
+    return opener
+
+python 类和对象
+
+Python规定单下划线必须是内部实现
+双下划线在继承是无法被覆盖
