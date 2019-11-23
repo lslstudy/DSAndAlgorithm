@@ -249,3 +249,102 @@ python 类和对象
 
 Python规定单下划线必须是内部实现
 双下划线在继承是无法被覆盖
+
+对于你定义的每一个类，Python会计算出一个所谓的方法解析顺序(MRO)列表。
+ 这个MRO列表就是一个简单的所有基类的线性顺序表,为了实现继承，
+ Python会在MRO列表上从左到右开始查找基类，直到找到第一个匹配这个属性的类为止。
+
+    子类会先于父类被检查
+    多个父类会根据它们在列表中的顺序被检查
+    如果对下一个类存在两个合法的选择，选择第一个父类
+
+
+描述器类：
+
+class LazyProperty:
+    def __init__(self, func):
+        self.func = func
+
+    def __get__(self, instance, cls):
+        if instance is None:
+            return self
+        else:
+            value = self.func(instance)
+            setattr(instance, self.func.__name__, value)
+            return value
+
+描述器被放入一个类的定义时， 每次访问属性时它的 __get__()
+、__set__() 和 __delete__() 方法就会被触发。 不过，
+如果一个描述器仅仅只定义了一个 __get__() 方法的话，它比通常的具有更弱的绑定。
+ 特别地，只有当被访问属性不在实例底层的字典中时 __get__() 方法才会被触发。
+
+
+import time
+from functools import wraps
+
+def this_time(func):
+    @wraps(func) # 保留原函数的元数据信息，函数签名，注解等
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time
+        print(func.__name__, end-start)
+        return result
+    return wrapper
+
+解除装饰器：通过调用被装饰函数的__wrapped__属性来访问原始函数
+example:
+    @this_time
+    def add(x, y):
+        return x+y
+
+    orig_add = add.__wrapped__
+    orig_add(3, 4)
+
+
+Python global和nonlocal, global改变全局变量，nonlocal改变局部变量，例如在类变量
+
+
+给类或静态方法提供装饰器很简单，不过要确保装饰器在@classmsthod或@staticmethod之前
+class Spam:
+
+    @classmsthod
+    @timethis
+    def class_method():
+        pass
+
+    @staticmethod
+    @timethis
+    def static_method():
+        pass
+
+元类控制实例的创建，自己实现__call__()方法
+
+class Singleton(type):
+    def __init__(self, *args, **kwargs):
+        self._instance = None
+        super(Singleton, self).__init__(*args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        if self._instance is None:
+            self._instance = super(Singleton, self).__call__(*args, **kwargs)
+            return self._instance
+        else:
+            return self._instance
+
+class Spam(metaclass=Singleton):
+    def __init__():
+        print("create Spm")
+
+
+CPU密集型工作：concurrent.futures.ProcessPoolExecutor(N) N为系统上可用的CPU个数
+被提交到池子中的工作必须被定义为一个函数，pool.map()和pool.submit()
+
+
+# http://blog.guoyb.com/2016/07/03/python-coroutine/
+# https://snarky.ca/how-the-heck-does-async-await-work-in-python-3-5/
+yield,send
+遇到yield时，会自动识别为生成器，暂停执行将结果返回，send可以发送中断休眠时间，唤醒功能，使继续执行.
+
+yield from
+yield from 用于重构生成器

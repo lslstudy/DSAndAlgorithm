@@ -276,6 +276,36 @@ def valid_pop_order(pu: list, po: list) -> bool:
     return False if stack else True
 
 
+def dfs(graph, start):
+    visited, stack = set(), [start]
+    while stack:
+        vertex = stack.pop()
+        if vertex not in visited:
+            visited.add(vertex)
+            stack.extend(graph[vertex] - visited)
+    return visited
+
+
+def dfs_rec(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(start)
+    for it in graph[start] - visited:
+        dfs_rec(graph, it, visited)
+    return visited
+
+
+def dfs_path(graph, start, goal):
+    stack = [(start, [start])]
+    while stack:
+        (vertex, path) = stack.pop()
+        for it in graph[vertex] - set(path):
+            if it == goal:
+                yield path + [it]
+            else:
+                stack.append((it, path+[it]))
+
+
 def tree_width(root: TreeNode):
     """ the width of tree
     :return:
@@ -725,6 +755,9 @@ if __name__ == '__main__':
 
     ans = longest_sub_str(str1="abcda", str2="abdefa")
     print(ans)
+
+    ans1 = longest_sub_length(s="abcda1234d")
+    print(ans1)
 
     queue = Queue(capacity=10)
     queue.put(1, 2, 3, 4, 5)
