@@ -272,13 +272,194 @@ def generate_parentheses(num: int) -> list:
     return answer
 
 
-def merge_k_sorted_link(links: list) -> LinkNode:
+def merge_k_sorted_link(links: list):
     """ 1.需要合并次数最少：分治法
         2.暴力法：相邻两个有序链表两两合并
         3.最小堆：所有链表的头元素放到最小堆，取出最小堆的堆顶元素，再将堆顶元素的下一个元素放入堆中，重复次过程，直到没有元素为止。
     """
+    if not links:
+        return links
+    n = len(links)
+    while n > 1:
+        step = (n+1) >> 1  # step
+        # 迭代处理：i位置和i+mid位置两两合并
+        for i in range(n >> 1):
+            links[i] = merge_sorted_link(links[i], links[i+step])
+        # 缩减迭代条件，n变为原来的一半。
+        n = step
+    return links[0]
 
-    pass
+
+def swap_pairs_rec(head: LinkNode):
+    if not head or not head.next:
+        return head
+    # 暂存第二个节点的指向地址空间
+    second = head.next
+    # 改变后的第二个节点指向下递归的返回值
+    head.next = swap_pairs_rec(head.next.next)
+    # 第二个几点指向第一个节点
+    second.next = head
+    # 交换后的头结点
+    return second
+
+
+def reverse_k_group(head: LinkNode, k: int):
+    """ 思路：两个函数实现：一个用于按照k个元素切分，一个用于把k个元素翻转
+    """
+    if not head or k == 1:
+        return head
+    dummy = LinkNode(-1)
+    pre, curr = dummy, head
+    dummy.next = head
+    i = 0
+    while curr:
+        i += 1
+        # k个元素进行一次翻转
+        if i % k == 0:
+            pre = reverse_one_group(pre, curr.next)
+            curr = pre.next
+        else:
+            curr = curr.next
+    return dummy.next
+
+
+def reverse_one_group(start: LinkNode, end: LinkNode):
+    last = start.next
+    curr = last.next
+    while curr != end:
+        last.next = curr.next
+        curr.next = start.next
+        start.next = curr
+        curr = last.next
+    return last
+
+
+def remove_duplicates(seq: list) -> tuple:
+    """ 删除排序数组中额重复元素，快慢指针，都指向第一个元素，当后一个元素和前一个元素不同时，两指针都向前移动，两元素相同时，快指针移动
+    """
+    if not seq:
+        return 0
+    fast, slow = 0, 0
+    while fast < len(seq):
+        if seq[fast] == seq[slow]:
+            fast += 1
+        else:
+            # 注意：要先跳过不相同元素
+            slow += 1
+            seq[slow] = seq[fast]
+            fast += 1
+    return slow + 1, seq[:slow+1]
+
+
+def remove_element(nums: list, target: int):
+    """ 删除数组追踪等于目标值的元素，不相等移动元素，相等就跳过
+    """
+    if not nums:
+        return 0
+    res = 0
+    for i in range(len(nums)):
+        if nums[i] != target:
+            nums[res] = nums[i]
+            res += 1
+    return res
+
+
+def str_str(parent: str, child: str) -> int:
+    """ 自字符串在父字符串中的起始下标
+    """
+    if not child:
+        return 0
+    m, n = len(parent), len(child)
+    if m < n:
+        return -1
+    for i in range(m - n):
+        j = 0
+        for j in range(n):
+            if parent[i+j] != child[j]:
+                break
+        # 下标和长度差值为1
+        j += 1
+        if j == n:
+            return i
+    return -1
+
+
+def longest_valid_parentheses(strs: str) -> int:
+    """这里我们还是借助栈来求解，需要定义个start变量来记录合法括号串的起始位置，我们遍历字符串，如果遇到左括号，则将当前下标压入栈，如果遇到右括号，且当前栈为空，则将下一个坐标位置记录到start，如果栈不为空，则将栈顶元素取出，此时若栈为空，则更新结果和i - start + 1中的较大值，否则更新结果和i - 栈顶元素中的较大值
+    """
+    if not strs:
+        return 0
+    stack = list()
+    start, res = 0, 0
+    for i in range(len(strs)):
+        if strs[i] == "(":
+            stack.append(strs[i])
+        else:
+            if not stack:
+                start = i + 1
+            else:
+                stack.pop()
+                index = rindex(stack, stack[-1])
+                res = max(res, i-index) if stack else max(res, i - start + 1)
+    return res
+
+
+def rindex(seq: list, target) -> int:
+    for i in range(len(seq)-1, -1, -1):
+        if seq[i] == target:
+            return i
+    return -1
+
+
+def search_route(nums: list, target: int):
+    """  如果中间的数小于最右边的数，则右半段是有序的，若中间数大于最右边数，则左半段是有序的，我们只要在有序的半段里用首尾两个数组来判断目标值是否在这一区域内，这样就可以确定保留哪半边了
+    """
+    if not nums:
+        return -1
+    left, right = 0, len(nums)-1
+    while left < right:
+        mid = (left + right) >> 1
+        if nums[mid] == target:
+            return mid
+        # 右边有序
+        elif nums[mid] < nums[right]:
+            if nums[mid] < target and nums[right] >= target:
+                left = mid + 1
+            else:
+                right = mid - 1
+        # 左边有序
+        else:
+            if nums[left] <= target and nums[mid] > target:
+                right = mid - 1
+            else:
+                left = mid + 1
+    return -1
+
+
+def search_insert(nums: list, target: int) -> int:
+    for i in range(len(nums)):
+        if nums[i] >= target:
+            return i
+    return len(nums)
+
+
+def combination_sum(nums: list, target: int) -> list:
+    if not nums:
+        return []
+    result = list()
+
+    def _helper(tmp: list, let):
+        if let < 0:
+            return
+        elif let == 0:
+            result.append(tmp)
+            return
+        else:
+            for elem in nums:
+                tmp.append(elem)
+                _helper(tmp, let - elem)
+    _helper(target)
+    return result
 
 
 if __name__ == '__main__':
@@ -294,4 +475,10 @@ if __name__ == '__main__':
 
     # print(letter_combinations(number=23))
 
-    print(generate_parentheses(num=3))
+    # print(generate_parentheses(num=3))
+    # print(remove_duplicates(seq=[0, 0, 1, 1, 1, 2, 2]))
+    # print(remove_element([0, 1, 2, 2, 3, 0, 4, 2], 2))
+    # print(str_str(parent="hello", child="ll"))
+
+    # print(rindex(seq=[1, 2, 3, 4, 5], target=4))
+    print(combination_sum(nums=[2, 3, 5], target=8))
