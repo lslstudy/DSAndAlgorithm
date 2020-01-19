@@ -43,8 +43,10 @@ def two_link_sum(l1: LinkNode, l2: LinkNode):
     while tmp or l1 or l2:
         if l1:
             tmp += l1.val
+            l1 = l1.next
         if l2:
             tmp += l2.val
+            l2 = l2.next
         pnode.next = LinkNode(tmp % 10)
         pnode = pnode.next
         tmp //= 10
@@ -94,7 +96,7 @@ def max_area(seq: list) -> int:
     """
     if not seq:
         return 0
-    answer, left, right = 0, 0, len(seq)
+    answer, left, right = 0, 0, len(seq) + 1
     while left < right:
         answer = max(answer, min(seq[left], seq[right]) * (right - left))
         if seq[left] < seq[right]:
@@ -443,23 +445,42 @@ def search_insert(nums: list, target: int) -> int:
     return len(nums)
 
 
-def combination_sum(nums: list, target: int) -> list:
-    if not nums:
-        return []
-    result = list()
+def first_missing_positive(nums: list) -> int:
+    """ 时间复杂度应为O(n)，并且只能使用常数级别的空间
+    给定一个未排序的整数数组，找出其中没有出现的最小的正整数。
+    思路是把1放在数组第一个位置nums[0]，2放在第二个位置nums[1]，即需要把nums[i]放在nums[nums[i] - 1]上，那么我们遍历整个数组，如果nums[i] != i + 1, 而nums[i]为整数且不大于n，另外nums[i]不等于nums[nums[i] - 1]的话，我们将两者位置调换，如果不满足上述条件直接跳过，最后我们再遍历一遍数组，如果对应位置上的数不正确则返回正确的数
+    """
+    size = len(nums)
+    for i in range(size):
+        while 0 < nums[i] <= size and nums[nums[i] - 1] != nums[i]:
+            nums[i], nums[nums[i] - 1] = nums[nums[i] - 1], nums[i]
+    for i in range(size):
+        if nums[i] != i + 1:
+            return i + 1
+    return size + 1
 
-    def _helper(tmp: list, let):
-        if let < 0:
-            return
-        elif let == 0:
-            result.append(tmp)
-            return
-        else:
-            for elem in nums:
-                tmp.append(elem)
-                _helper(tmp, let - elem)
-    _helper(target)
-    return result
+
+def max_sub_sum(nums: list) -> int:
+    """ 有正数和负数，正数加负数永远小于正数与正数相加
+    """
+    res, tmp_sum = -sys.maxsize, 0
+    for num in nums:
+        tmp_sum = max(tmp_sum + num, num)
+        res = max(tmp_sum, res)
+    return res
+
+
+def min_sum(nums: list) -> int:
+    if not nums:
+        return 0
+    row, col = len(nums), len(nums[-1])
+    dp = [[0] * col for _ in range(row)]
+    dp[-1] = nums[-1]
+
+    for i in range(row-2, -1, -1):
+        for j in range(i + 1):
+            dp[i][j] = min(dp[i+1][j], dp[i+1][j+1]) + nums[i][j]
+    return dp[0][0]
 
 
 if __name__ == '__main__':
@@ -480,5 +501,5 @@ if __name__ == '__main__':
     # print(remove_element([0, 1, 2, 2, 3, 0, 4, 2], 2))
     # print(str_str(parent="hello", child="ll"))
 
-    # print(rindex(seq=[1, 2, 3, 4, 5], target=4))
-    print(combination_sum(nums=[2, 3, 5], target=8))
+    print(rindex(seq=[1, 2, 3, 4, 5], target=4))
+    # print(combination_sum(nums=[2, 3, 5], target=8))

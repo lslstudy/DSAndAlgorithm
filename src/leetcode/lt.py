@@ -56,7 +56,7 @@ def two_link_sum(link1: ListNode, link2: ListNode) -> ListNode:
             val += link2.val
             link2 = link2.next
         pnode.next = ListNode(val % 10)
-        val /= 10
+        val //= 10
         pnode = pnode.next
     return phead.next
 
