@@ -6,6 +6,7 @@
 from __future__ import absolute_import
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from tornado.web import RequestHandler, Application
 
 
 from schema import User, Base

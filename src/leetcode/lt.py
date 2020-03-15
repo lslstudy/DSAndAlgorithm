@@ -61,6 +61,45 @@ def two_link_sum(link1: ListNode, link2: ListNode) -> ListNode:
     return phead.next
 
 
+def move_zeros(nums: list) -> list:
+    """　将数组中的０移到数组后面，保持数组的其他非零元素的相对位置
+        引入变量k记为０元素下标，时间 O(n), 空间O(1)
+    """
+    if not nums:
+        return nums
+    k = 0
+    for i in range(len(nums)):
+        if nums[i]:
+            if i != k:
+                nums[i], nums[k] = nums[k], nums[i]
+            else:
+                k += 1
+    return nums
+
+
+def color_sort(nums: list) -> list:
+    """ LeetCode75: 不适用排序函数对数组排序，排序顺序为红白蓝，分别使用０１２代替
+            采用三路快排思想：０和１交换，１和２交换，当前为１
+    """
+    if not nums:
+        return nums
+    zero, two = 0, len(nums)-1
+    for i in range(len(nums)):
+        if nums[i] == 1:
+            i += 1
+        elif nums[i] == 2:
+            nums[two], nums[i] = nums[i], nums[two]
+            two -= 1
+        else:
+            nums[zero], nums[i] = nums[i], nums[zero]
+            zero += 1
+            i += 1
+    return nums
+
+
+
+
+
 def swap_pairs(head: ListNode) -> ListNode:
     """ (1 -> 2 -> 3 -> 4 -> 5) => (2 -> 1 -> 4 -> 3 -> 5)
     """
@@ -270,9 +309,9 @@ def valid_pop_order(pu: list, po: list) -> bool:
     stack = []
     for elem in pu:
         stack.append(elem)
-        while stack and stack[-1] == po[-1]:
+        while stack and stack[-1] == po[0]:
             stack.pop()
-            po.pop()
+            po.pop(0)
     return False if stack else True
 
 
@@ -749,20 +788,22 @@ if __name__ == '__main__':
     # max_profit = max_profit_2(arr=arr)
     # print(max_profit)
 
-    t = [[2], [3, 4], [6, 5, 7], [4, 1, 8, 3]]
-    ans = min_triangle(t=t)
+    # t = [[2], [3, 4], [6, 5, 7], [4, 1, 8, 3]]
+    # ans = min_triangle(t=t)
+    # print(ans)
+    #
+    # ans = longest_sub_str(str1="abcda", str2="abdefa")
+    # print(ans)
+
+    # ans1 = sub_length(s="abcabcd")
+    # print(ans1)
+
+    # queue = Queue(capacity=10)
+    # queue.put(1, 2, 3, 4, 5)
+    # print(queue.get(), queue.get(), queue.get(), queue.get(), queue.get(), queue.get())
+    nums = [2, 0, 2, 1, 1, 0]
+    ans = color_sort(nums)
     print(ans)
-
-    ans = longest_sub_str(str1="abcda", str2="abdefa")
-    print(ans)
-
-    ans1 = longest_sub_length(s="abcda1234d")
-    print(ans1)
-
-    queue = Queue(capacity=10)
-    queue.put(1, 2, 3, 4, 5)
-    print(queue.get(), queue.get(), queue.get(), queue.get(), queue.get(), queue.get())
-
 
 
 

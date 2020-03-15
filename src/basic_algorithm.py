@@ -32,6 +32,21 @@ def binary_search(arr: list, elem: int) -> int:
     return -1
 
 
+def my_search(arr: list, target: int):
+    if not arr or not target:
+        return -1
+    left, right = 0, len(arr) - 1
+    while left < right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+
+
 def get_largest_kth(arr: list, k: int) -> list:
     """ Given array and find largest K elements
     :return:

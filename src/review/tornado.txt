@@ -165,9 +165,17 @@ finish方法作用: 在使用@tornado.web.asynchornous装饰器时，tornado不�
         self.finish()
 
 python 4.3以后使用async 和await 代替tornado.gen.coroutine yield
+ @gen.coroutine 这样一个装饰器,它的作用就是把一个普通的函数变成一个返回 Future 对象的函数
 
 tornado ioloop 和 iostream
     ioloop.py: 主要的是将底层的epoll或者说是其他的IO多路复用封装作异步事件来处理。
     iostream.py: 主要是对于下层的异步事件的进一步封装，为其封装了更上一层的buffer（IO）事件。
+
+
+self.write():将数据写入缓冲区
+self.flush()：将write写入缓冲区的数据发送出去, self.finish() 结束这次响应之前，可以多次调用 self.write 和 self.flush，逐步发出数据。
+self.finish()：告诉tornado关闭客户端的链接。
+
+
 
 
