@@ -37,14 +37,6 @@ def max_area(nums: list) -> int:
     return area
 
 
-def get_area(area: list):
-    if not area:
-        return 0
-
-    left, right, m_area = 0, len(area) - 1, 0
-
-
-
 def remove_duplicates(nums: list):
     """ 26 去除重复元素, 返回长度
     """

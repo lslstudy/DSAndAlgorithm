@@ -74,15 +74,16 @@ def longest_valid_parentheses(s: str):
     for i in range(1, len(s)):
         if s[i] == ")":
             if s[i-1] == "(":
-                dp[i] = dp[i-2] + 2
-            elif i - dp[i-1] > 0 and s[i-dp[i-1]-1] == ")":
+                dp[i] = (dp[i-2] if i >= 2 else 0) + 2
+            elif i - dp[i-1] > 0 and s[i-dp[i-1]-1] == "(":
+                #       中间长度 + 中间之前的长度 + ()
                 dp[i] = dp[i-1] + (dp[i-dp[i-1]-2] if (i-dp[i-1]) >= 2 else 0) + 2
-            max_len = max_len(max_len, dp[i])
+            max_len = max(max_len, dp[i])
 
     return max_len
 
 
-def max_sub_array(nums: list):
+def max_sub_array_sum(nums: list):
     if not nums:
         return 0
 
@@ -155,7 +156,7 @@ def min_triangle_path_sum(triangle: list) -> int:
     return dp[0][0]
 
 
-def work_break(s: str, word_list: list) -> bool:
+def words_break(s: str, word_list: list) -> bool:
     """  "applepenapple", wordDict = ["apple", "pen"] => True
     设dp(i)表示以第i个字符结尾(不包含第i个字符)的子字符串是否能拆分成字典中的单词
     """
@@ -172,14 +173,6 @@ def work_break(s: str, word_list: list) -> bool:
                 break
 
     return dp[-1]
-
-
-def word_break_list(s, words) -> list:
-    # TODO
-    if not s:
-        return []
-
-    pass
 
 
 def calculate_min_start_hp(dungeon: list) -> int:
@@ -409,13 +402,17 @@ if __name__ == '__main__':
     # ans = max_profit_k(p)
     # print(ans)
 
-    a = print_strings("A11B")
-    print(a)
+    # a = print_strings("A11B")
+    # print(a)
+    #
+    # b = print_strings("(AA)2A")
+    # print(b)
+    # print(print_strings("((A2B)2)2G"))
+    # print(print_strings("(YUANFUDAO)2JIAYOU"))
+    # print(print_strings("A2BC4D2"))
 
-    b = print_strings("(AA)2A")
-    print(b)
-    print(print_strings("((A2B)2)2G"))
-    print(print_strings("(YUANFUDAO)2JIAYOU"))
-    print(print_strings("A2BC4D2"))
+    s = "))((()))"
+    a = longest_valid_parentheses(s)
+    print(a)
 
 

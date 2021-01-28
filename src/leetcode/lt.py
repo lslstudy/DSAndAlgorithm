@@ -67,13 +67,14 @@ def move_zeros(nums: list) -> list:
     """
     if not nums:
         return nums
-    k = 0
+    leftag = 0
     for i in range(len(nums)):
-        if nums[i]:
-            if i != k:
-                nums[i], nums[k] = nums[k], nums[i]
-            else:
-                k += 1
+        if not nums[i]:
+            continue
+        nums[leftag] = nums[i]
+        leftag += 1
+    for i in range(leftag, len(nums)):
+        nums[i] = 0
     return nums
 
 
@@ -83,21 +84,19 @@ def color_sort(nums: list) -> list:
     """
     if not nums:
         return nums
-    zero, two = 0, len(nums)-1
-    for i in range(len(nums)):
-        if nums[i] == 1:
-            i += 1
-        elif nums[i] == 2:
-            nums[two], nums[i] = nums[i], nums[two]
-            two -= 1
+    left, right = 0, len(nums)-1
+    cur = 0
+    while cur <= right:
+        if nums[cur] == 2:
+            nums[cur], nums[right] = nums[right], nums[cur]
+            right -= 1
+        elif nums[cur] == 1:
+            cur += 1
         else:
-            nums[zero], nums[i] = nums[i], nums[zero]
-            zero += 1
-            i += 1
+            nums[cur], nums[left] = nums[left], nums[cur]
+            left += 1
+            cur += 1
     return nums
-
-
-
 
 
 def swap_pairs(head: ListNode) -> ListNode:
@@ -113,9 +112,8 @@ def swap_pairs(head: ListNode) -> ListNode:
     return head
 
 
-def longest_sub_length(s: str) -> int:
-    """ longest sub str without repeat character
-    :return:
+def longest_repeated_sub_length(s: str) -> int:
+    """ longest sub str without repeat character  "aabca"  =>  abc bca => 3
     """
     if not s or len(s) <= 0:
         return 0
@@ -234,6 +232,68 @@ def in_order(root: TreeNode):
         helper(node.right)
     helper(node=root)
     return answer
+
+
+def in_order_traverse(root: TreeNode):
+    if not root:
+        return []
+    answer = []
+    stack, cur = [], root
+    while cur or stack:
+        if cur:
+            stack.append(cur)
+            cur = cur.left
+        else:
+            node = stack.pop()
+            answer.append(cur.val)
+            cur = node.right
+    return answer
+
+
+def pre_order_traverse(root: TreeNode):
+    if not root:
+        return []
+    stack, answer = [root], []
+    while stack:
+        node = stack.pop()
+        answer.append(node.val)
+        if node.right:
+            stack.append(node.right)
+        if node.left:
+            stack.append(node.left)
+    return answer
+
+
+def post_order_traverse(root: TreeNode):
+    if not root:
+        return []
+    stack, stack2, answer = [root], [], []
+    while stack:
+        node = stack.pop()
+        stack2.append(node)
+        if node.left:
+            stack.append(node.left)
+        if node.right:
+            stack.append(node.right)
+    while stack2:
+        answer.append(stack2.pop().val)
+    return answer
+
+
+def post_traverse(root: TreeNode):
+    if not root:
+        return
+    stack, stack2, ans = [root], [], []
+    while stack:
+        node = stack.pop()
+        stack2.append(node)
+        if node.left:
+            stack.append(node.left)
+        if node.right:
+            stack.append(node.right)
+    while stack2:
+        ans.append(stack2.pop().val)
+    return ans
 
 
 def find_largest_kth(root: TreeNode, k: int) -> int:
@@ -729,6 +789,38 @@ def longest_common_sub(word1: str, word2: str) -> int:
     return dp[m][n]
 
 
+def max_asc_num(num):
+    """ 找到给定数字的最大递增数字 eg: 1243 -> 1239, 1234 -> 1234
+    """
+    if num < 10:
+        return num
+    arr = [x for x in str(num)]
+    size = len(arr)
+    flag = size - 1
+    for i in range(size-1, 0, -1):
+        if arr[i-1] > arr[i]:
+            arr[i-1] = str(int(arr[i-1])-1)
+            flag = i
+    print("flag = ", flag)
+    for i in range(flag, size):
+        arr[i] = "9"
+    return int("".join(arr))
+
+
+def max_common_array(A: list, B: list) -> int:
+    if not A or not B:
+        return 0
+    dp = [[0 for _ in range(len(B) + 1)] for _ in range(len(A) + 1)]
+    res = 0
+    for i in range(1, len(A)):
+        for j in range(1, len(B)):
+            if A[i-1] == B[j-1]:
+                dp[i][j] = dp[i-1][j-1] + 1
+                res = max(dp[i][j], res)
+    print("\n".join([str(x) for x in dp]))
+    return res
+
+
 def min_consist_of_coin(target: int) -> int:
     """ find min count of coins which sum coins value equal target
         dp[i] = min(dp[i-1], dp[target-3], dp[target-5]) + 1
@@ -801,9 +893,17 @@ if __name__ == '__main__':
     # queue = Queue(capacity=10)
     # queue.put(1, 2, 3, 4, 5)
     # print(queue.get(), queue.get(), queue.get(), queue.get(), queue.get(), queue.get())
-    nums = [2, 0, 2, 1, 1, 0]
-    ans = color_sort(nums)
-    print(ans)
+    # nums = [2, 0, 2, 1, 1, 0]
+    # print(csort(nums))
+    # print(move_zero(nums))
+    # s = "abacdabc"
+    # print(longest_sub_len(s))
+
+    # print(max_asc_num(9999))
+
+    print(max_common_array([1, 2, 3, 2, 1], [1, 2, 3, 2, 1]))
+
+
 
 
 
